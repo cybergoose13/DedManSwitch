@@ -11,16 +11,14 @@
 ```python
 pip install TwitterAPI
 ```
-> Make file named keys.txt in folder with script with this format
-> ```txt
->Key:
->TWITTER_KEY
->key_secret:
->TWITTER_KEY_SECRET
->token_key:
->TWITTER_TOKEN
->token_secret:
->TWITTER_TOKEN_SECRET
+> Make file named keys.json in folder with script with this format
+> ```json
+>{
+>   "key":"TWITTER_KEY",
+>   "key_secret":"TWITTER_KEY_SECRET",
+>   "token_key":"TWITTER_TOKEN",
+>   "token_secret":"TWITTER_TOKEN_SECRET"
+> }
 >```
-> Replace cap letters
+> Replace values with valid keys
 
