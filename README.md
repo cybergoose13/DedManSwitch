@@ -22,3 +22,6 @@ pip install TwitterAPI
 >```
 > Replace values with valid keys
 
+## To be added
+>* plugin code to be ran
+>* keyword search
