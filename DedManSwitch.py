@@ -1,5 +1,3 @@
-from os import system
-from typing import Iterable
 from TwitterAPI import TwitterAPI
 from datetime import datetime
 from time import sleep
@@ -12,17 +10,21 @@ class DedTime:  #Subject to name Change
         return
 
     def parse_to_date(self, time_arr):
-        return
+        time_arr= time_arr.split(' ')
+        date_str= time_arr[5] + "-" + time_arr[1] + "-" + time_arr[2] +\
+            " " + time_arr[3]
+        return datetime.strptime(date_str, "%Y-%b-%d %H:%M:%S")
 
     def remove_microseconds(self, time_stamp):
-        return
+        time_s= time_stamp.strftime('%Y-%m-%d %H:%M:%S.%f')[:-7]
+        return datetime.strptime(time_s, "%Y-%m-%d %H:%M:%S")
 
 
 class DedManSwitch:
     def __init__(self):
         return
 
-    def get_keys():
+    def get_keys(self):
         if not os.path.isfile('keys.json'):
             open('keys.json', 'w+')\
             .write('{\n\t"key":"KEY",\n\t"key_secret":"SECRET",\n\t"token":"TOKEN",\n\t"token_secret":"TOKEN_S"\n}')
@@ -37,35 +39,42 @@ class DedManSwitch:
     def get_last_tweet(self, api):
         return api.request('statuses/user_timeline', {'count':'1'})
 
-    def get_post_time(self, response): # change api to response
+    def get_post_time(self, response):
         for item in response.get_iterator():
             return item['created_at']
 
-    def get_post_id(self, api): # change api to response
-        return
+    def get_post_id(self, response):
+        for item in response.get_iterator():
+            return item['id']
     
-    def get_post_text(self, api): # change api to response
-        return
+    def get_post_text(self, response):
+        for item in response.get_iterator():
+            return item['text']
 
     def post_tweet(self, api, msg):
-        return
+        return api.request('statuses/update', {'status': msg})
 
     def reply_to_tweet(self, api, msg, tweet_id):
-        return
+        return api.request('statuses/update', {'in_reply_to_status_id': tweet_id, 'status': msg})
 
     def run(self, msg, delay):
+        ded_start= DedTime().remove_microseconds(datetime.utcnow())
         sleep(delay)
         api= self.get_api(self.get_keys())
-        if DedTime.remove_microseconds( datetime.utcnow() ) < self.get_post_time():
-            r= self.reply_to_tweet(api, msg, self.get_post_id(api))
+        last_post= self.get_last_tweet(api)
+        post_time= self.get_post_time(last_post)
+        if ded_start < DedTime().parse_to_date(post_time):
+            print('Recent post found')
+            r= self.reply_to_tweet(api, msg, self.get_post_id(last_post))
             print(r.status_code)
+            print("SLEEPING")
             return self.run(msg, delay)
         else:
             '''
             If no tweet has been made since they program ran.
             Execute code here.
             '''
+            print("ENDING")
             return
 
-
-keys= DedManSwitch.get_keys()
+DedManSwitch().run("Check-In passed.\n\t-Bot", 120)
